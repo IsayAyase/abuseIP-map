@@ -1,16 +1,20 @@
-import fs from "fs";
-import { chuckIps, mergeAbuseIpdbAndIpInfo } from "./lib/dataProcessors";
-import { getBlacklist } from "./services/abuseIPDB";
-import { getIpInfoForIpChunks } from "./services/ipPAI";
+import Express from "express";
+import { connectDb } from "./configs/mongo";
+import envvars from "./contants/envvars";
+import router from "./routes/router";
 
-getBlacklist().then((ipData) => {
-    const ips = chuckIps(ipData);
-    getIpInfoForIpChunks(ips).then((ipInfo) => {
-        // fs.writeFileSync("./ipInfo.json", JSON.stringify(ipInfo, null, 4));
-        // console.log(ipInfo.length);
-        const mergedData = mergeAbuseIpdbAndIpInfo(ipData, ipInfo);
-        fs.writeFileSync("./merged.json", JSON.stringify(mergedData, null, 4));
+const app = Express();
 
-        process.exit();
-    });
+app.use(router);
+
+app.listen(envvars.PORT, () => {
+    connectDb()
+        .then(() => {
+            console.log("> Connected to db");
+        })
+        .catch((error) => {
+            console.error("> Error connecting to db:", error);
+            process.exit(1);
+        });
+    console.log(`> Server running on port ${envvars.PORT}`);
 });
