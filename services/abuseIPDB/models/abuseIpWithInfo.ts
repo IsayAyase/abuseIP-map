@@ -65,6 +65,7 @@ const abuseIpWithInfoSchema = new mongoose.Schema<AbuseIpWithInfoType>(
             type: String,
             required: true,
             unique: true,
+            index: true,
         },
         abuseConfidenceScore: {
             type: Number,
@@ -89,8 +90,6 @@ const abuseIpWithInfoSchema = new mongoose.Schema<AbuseIpWithInfoType>(
         // dont know how to make it more clear that it's 30 days in seconds, you moron!
     }
 );
-
-abuseIpWithInfoSchema.index({ ipAddress: 1 }, { unique: true });
 
 const AbuseIpWithInfo = mongoose.model(
     "AbuseIpWithInfo",
