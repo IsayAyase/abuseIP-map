@@ -1,4 +1,3 @@
-import fs from "fs";
 import { progressBar } from "../lib/progressBar";
 import { sleep } from "../lib/sleep";
 import type { IpInfoType } from "../types";
@@ -6,10 +5,10 @@ import type { IpInfoType } from "../types";
 export const getIpInfoForIpChunks = async (
     ipsChunks: string[][]
 ): Promise<IpInfoType[]> => {
-    if (fs.existsSync("./ipInfo.json")) {
-        console.log("Using cached ipInfo");
-        return JSON.parse(fs.readFileSync("./ipInfo.json").toString());
-    }
+    // if (fs.existsSync("./ipInfo.json")) {
+    //     console.log("Using cached ipInfo");
+    //     return JSON.parse(fs.readFileSync("./ipInfo.json").toString());
+    // }
 
     const data: IpInfoType[] = [];
     const url = `http://ip-api.com/batch?fields=status,country,countryCode,region,regionName,city,zip,lat,lon,timezone,isp,query`;
@@ -38,7 +37,8 @@ export const getIpInfoForIpChunks = async (
         } catch (error) {
             console.error("Error fetching blacklist:", error);
         }
-        sleep(5000);
+        await sleep(5000);
     }
+    progressBar(ipsChunks.length, ipsChunks.length);
     return data;
 };

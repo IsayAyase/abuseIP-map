@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
-import envvars from "../contants/envvars";
+import envvars from "../constants/envvars";
 
 const accessCheck = (req: Request, res: Response, next: NextFunction) => {
     const accessKey = req.query.accessKey as string;

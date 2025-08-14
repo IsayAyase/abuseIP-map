@@ -30,3 +30,7 @@ export type IpInfoType = {
 export type AbuseIpWithInfoType = AbuseIPDBBlacklistDataType & {
     ipInfo: IpInfoType;
 };
+
+export type StoreValueType = {
+    status: "STARTED" | "PROCESSING" | "COMPLETED" | "ERROR" | null;
+};

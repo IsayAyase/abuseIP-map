@@ -1,28 +1,14 @@
 import type { Request, Response } from "express";
-import fs from "fs";
-import { insertAbuseIpWithInfo } from "../db-helpers/abuseIpWithInfo";
-import { chuckIps, mergeAbuseIpdbAndIpInfo } from "../lib/dataProcessors";
+import store from "../configs/store";
 import { APIError } from "../lib/error";
-import { getBlacklist } from "../services/abuseIPDB";
-import { getIpInfoForIpChunks } from "../services/ipPAI";
+import abuseIpWithInfoPipeline from "../pipelines/abuseIpWithInfoPipeline";
 
 export const abuseIpWithInfoController = async (
     req: Request,
     res: Response
 ) => {
     try {
-        const ipData = await getBlacklist();
-        if (!ipData) {
-            throw new APIError({ message: "Error fetching blacklist" });
-        }
-        const ips = chuckIps(ipData);
-        const ipInfo = await getIpInfoForIpChunks(ips);
-        const mergedData = mergeAbuseIpdbAndIpInfo(ipData, ipInfo);
-        const flag = await insertAbuseIpWithInfo(mergedData);
-        if (flag) {
-            throw new APIError({ message: "Error saving data to db" });
-        }
-        fs.writeFileSync("./merged.json", JSON.stringify(mergedData, null, 4));
+        await abuseIpWithInfoPipeline();
         res.status(200).json({
             success: true,
             message: "Data processed and saved",
@@ -37,5 +23,6 @@ export const abuseIpWithInfoController = async (
                 message: "Internal server error",
             });
         }
+        store.setStoreValueFor("status", "ERROR");
     }
 };

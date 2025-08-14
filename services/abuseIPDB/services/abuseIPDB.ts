@@ -1,15 +1,14 @@
-import fs from "fs";
-import envvars from "../contants/envvars";
+import envvars from "../constants/envvars";
 import type { AbuseIPDBBlacklistType } from "../types";
 
 export const getBlacklist = async (
     limit: number = 10000,
     minConfidence: number = 60
 ): Promise<AbuseIPDBBlacklistType | null> => {
-    if (fs.existsSync("./blacklist.json")) {
-        console.log("Using cached blacklist");
-        return JSON.parse(fs.readFileSync("./blacklist.json").toString());
-    }
+    // if (fs.existsSync("./blacklist.json")) {
+    //     console.log("Using cached blacklist");
+    //     return JSON.parse(fs.readFileSync("./blacklist.json").toString());
+    // }
 
     const url = `https://api.abuseipdb.com/api/v2/blacklist?limit=${limit}&minConfidence=${minConfidence}`;
     try {

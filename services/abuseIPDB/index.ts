@@ -1,6 +1,6 @@
 import Express from "express";
 import { connectDb } from "./configs/mongo";
-import envvars from "./contants/envvars";
+import envvars from "./constants/envvars";
 import router from "./routes/router";
 
 const app = Express();

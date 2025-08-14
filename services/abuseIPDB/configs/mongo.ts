@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import envvars from "../contants/envvars";
+import envvars from "../constants/envvars";
 
 export const connectDb = () =>
     mongoose.connect(envvars.MONGO_URI, {
