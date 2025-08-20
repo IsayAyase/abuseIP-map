@@ -1,20 +1,14 @@
-import { getAbuseIpWithInfo } from "@/db/dbHelpers/abuseIpWithInfo";
-
 const Page = async () => {
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    const data = await getAbuseIpWithInfo(yesterday);
     return (
         <div className="flex flex-col gap-4">
-            {data.map((entry) => (
-                <div
-                    key={entry._id}
-                    className="px-2 py-1 rounded-md border border-border"
-                >
-                    <p>{entry.ipInfo.lat}</p>
-                    <p>{entry.ipInfo.lon}</p>
-                </div>
-            ))}
+            <div className="border border-border px-2 py-1 flex flex-col rounded-lg w-fit text-xs">
+                <p>
+                    <span className="text-muted-foreground">Lat:</span> -25.0000
+                </p>
+                <p>
+                    <span className="text-muted-foreground">Lon:</span> 55.0000
+                </p>
+            </div>
         </div>
     );
 };

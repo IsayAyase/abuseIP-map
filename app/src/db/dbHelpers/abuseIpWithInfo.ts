@@ -1,19 +1,23 @@
 import AbuseIpWithInfo from "@/db/models/abuseIpWithInfo";
-import fs from "fs";
+import mongoose from "mongoose";
 import connectDB from "../connect";
+import { getFromCache, setInCache } from "../lib/cache/cacheInRedis";
+import type { AbuseIpWithInfoType, CoordOnlyInfoType } from "../types";
 
-export const getAbuseIpWithInfo = async (
-    reportedAt: Date
-): Promise<
-    {
-        _id: string;
-        ipInfo: {
-            lat: number;
-            lon: number;
-        };
-    }[]
-> => {
+/**
+ * @param reportedAt Date | string (YYYY-MM-DD)
+ * @returns
+ */
+export const getCoordsOnlyAbuseIpWithInfo = async (
+    reportedAt: string
+): Promise<CoordOnlyInfoType[]> => {
     try {
+        const cachedData = await getFromCache(reportedAt);
+        if (cachedData) {
+            return cachedData;
+        }
+
+        console.log("DB> Fetching coords from database");
         await connectDB();
 
         const startOfDay = new Date(reportedAt);
@@ -21,32 +25,51 @@ export const getAbuseIpWithInfo = async (
         const endOfDay = new Date(reportedAt);
         endOfDay.setHours(23, 59, 59, 999);
 
-        const abuseIpsWithInfo = await AbuseIpWithInfo.aggregate([
-            {
-                $match: {
-                    lastReportedAt: {
-                        $gte: startOfDay,
-                        $lte: endOfDay,
+        const abuseIpsWithInfo: CoordOnlyInfoType[] =
+            await AbuseIpWithInfo.aggregate([
+                {
+                    $match: {
+                        lastReportedAt: {
+                            $gte: startOfDay,
+                            $lte: endOfDay,
+                        },
                     },
                 },
-            },
-            {
-                $project: {
-                    _id: 1,
-                    ipInfo: {
-                        lat: 1,
-                        lon: 1,
+                {
+                    $project: {
+                        _id: 1,
+                        coords: {
+                            lat: "$ipInfo.lat",
+                            lon: "$ipInfo.lon",
+                        },
                     },
                 },
-            },
-        ]);
-        fs.writeFileSync(
-            "./abuseIpWithInfo.json",
-            JSON.stringify(abuseIpsWithInfo, null, 4)
-        );
+            ]);
+
+        setInCache(reportedAt, abuseIpsWithInfo);
         return abuseIpsWithInfo;
     } catch (error) {
         console.error(error);
         return [];
+    }
+};
+
+export const getAbuseIpWithInfoById = async (
+    id: string
+): Promise<AbuseIpWithInfoType | null> => {
+    try {
+        await connectDB();
+        const abuseIpWithInfo = await AbuseIpWithInfo.aggregate([
+            {
+                $match: { _id: new mongoose.Types.ObjectId(id) },
+            },
+        ]);
+        if (abuseIpWithInfo.length === 0) {
+            return null;
+        }
+        return abuseIpWithInfo[0];
+    } catch (error) {
+        console.error(error);
+        return null;
     }
 };

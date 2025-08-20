@@ -23,3 +23,8 @@ export type IpInfoType = {
 export type AbuseIpWithInfoType = AbuseIPDBBlacklistDataType & {
     ipInfo: IpInfoType;
 };
+
+export type CoordOnlyInfoType = {
+    _id: string;
+    coords: Pick<IpInfoType, "lat" | "lon">;
+};

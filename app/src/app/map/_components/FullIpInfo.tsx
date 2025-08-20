@@ -1,0 +1,110 @@
+"use client";
+
+import { useGetFullCoordInfoByIdStore } from "@/store/clientStore";
+import dayjs from "dayjs";
+import { useEffect } from "react";
+import { getFullCoordInfoById } from "../_lib/clientApiCalls";
+
+const FullIpInfo = () => {
+    const {
+        clickedPointId,
+        loading,
+        infos,
+        setInfos,
+        setLoading,
+        setError,
+        isInfoFetched,
+    } = useGetFullCoordInfoByIdStore();
+
+    // Fetch full coordinate info when a point is clicked
+    useEffect(() => {
+        if (!clickedPointId || loading || isInfoFetched(clickedPointId)) {
+            return;
+        }
+
+        const fetchFullCoordInfo = async () => {
+            try {
+                setLoading(true);
+                const res = await getFullCoordInfoById(clickedPointId);
+                if (res) {
+                    setInfos(clickedPointId, res);
+                } else {
+                    setError("No coordinate info found for the clicked point.");
+                }
+            } catch (error: any) {
+                console.error("Error fetching full coordinate info:", error);
+                setError(error.message || "Failed to fetch coordinate info.");
+            }
+            setLoading(false);
+        };
+
+        fetchFullCoordInfo();
+    }, [clickedPointId]);
+
+    if (!clickedPointId) {
+        return null;
+    } else if (loading) {
+        return <div>Loading...</div>;
+    } else if (!infos[clickedPointId]) {
+        return <div></div>;
+    }
+    const info = infos[clickedPointId];
+    const data = [
+        {
+            label: "IP Address",
+            value: info.ipAddress,
+        },
+        {
+            label: "Last Reported At",
+            value: dayjs(info.lastReportedAt).format("YYYY-MM-DD HH:mm:ss"),
+        },
+        {
+            label: "Abuse Confidence Score",
+            value: info.abuseConfidenceScore.toString(),
+        },
+        {
+            label: "Longitude",
+            value: info.ipInfo.lon,
+        },
+        {
+            label: "Latitude",
+            value: info.ipInfo.lat,
+        },
+        {
+            label: "Country",
+            value: `${info.ipInfo.country} (${info.ipInfo.countryCode})`,
+        },
+        {
+            label: "Region",
+            value: `${info.ipInfo.regionName} (${info.ipInfo.region})`,
+        },
+        {
+            label: "City",
+            value: info.ipInfo.city,
+        },
+        {
+            label: "Zip Code",
+            value: info.ipInfo.zip,
+        },
+        {
+            label: "Timezone",
+            value: info.ipInfo.timezone,
+        },
+        {
+            label: "ISP",
+            value: info.ipInfo.isp,
+        },
+    ];
+    return (
+        <div className="w-full flex flex-col gap-1 justify-center text-xs text-left">
+            {data.map((item) => (
+                <div key={item.label} className="grid grid-cols-2 gap-1 w-full">
+                    <p className="text-muted-foreground w-full">{item.label}</p>
+                    <p className="w-full">{item.value}</p>
+                </div>
+            ))}
+        </div>
+    );
+};
+
+export default FullIpInfo;
