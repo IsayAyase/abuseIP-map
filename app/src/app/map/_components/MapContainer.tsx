@@ -6,7 +6,8 @@ import {
     useGetCoordsStore,
     useGetFullCoordInfoByIdStore,
 } from "@/store/clientStore";
-import { useMapPropsStore } from "@/store/stateStore";
+import { useMapConfigsStore, useMapPropsStore } from "@/store/stateStore";
+import { Crosshair } from "lucide-react";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { useTheme } from "next-themes";
@@ -70,6 +71,7 @@ const MapContainer = () => {
     } = useGetCoordsStore();
     const { setClickedPointId } = useGetFullCoordInfoByIdStore();
     const { zoom, setZoom, setCurrMouseCoords } = useMapPropsStore();
+    const { coordinatesEnabled, heatmapEnabled } = useMapConfigsStore();
 
     const mapRef = useRef<mapboxgl.Map | null>(null);
     const mapContainerRef = useRef<HTMLDivElement>(null);
@@ -102,6 +104,13 @@ const MapContainer = () => {
         setHoveredPointPos({ x, y });
     };
 
+    const removingMapBoxLogo = () => {
+        const logo = document.querySelector(".mapboxgl-control-container");
+        if (logo) {
+            logo.remove();
+        }
+    };
+
     // map load
     useEffect(() => {
         if (!mapContainerRef.current) return;
@@ -123,6 +132,8 @@ const MapContainer = () => {
             style,
             interactive: true,
         });
+
+        removingMapBoxLogo();
 
         function hideLabel(shouldHideLabels: boolean) {
             ALL_LAYERS.forEach((layerId) => {
@@ -239,16 +250,29 @@ const MapContainer = () => {
             });
 
             mapRef.current.on("click", "coordinates", (e) => {
-                if (!e.features?.[0]?.geometry) return;
+                if (!mapRef.current) return;
 
-                const geometry = e.features[0].geometry as GeoJSON.Point;
-                const id = e.features[0].properties?._id;
-                const coords = geometry.coordinates as [number, number];
+                const buffer = 5;
+                const features = mapRef.current.queryRenderedFeatures(
+                    [
+                        [e.point.x - buffer, e.point.y - buffer],
+                        [e.point.x + buffer, e.point.y + buffer],
+                    ],
+                    { layers: ["coordinates"] }
+                );
 
-                setClickedCoords({
-                    _id: id,
-                    coords: { lon: coords[0], lat: coords[1] },
-                });
+                if (features.length > 0) {
+                    const geometry = features[0].geometry as GeoJSON.Point;
+                    const id = features[0].properties?._id;
+                    const coords = geometry.coordinates as [number, number];
+
+                    setClickedCoords({
+                        _id: id,
+                        coords: { lon: coords[0], lat: coords[1] },
+                    });
+                } else {
+                    setClickedCoords(null);
+                }
             });
         });
 
@@ -258,6 +282,40 @@ const MapContainer = () => {
             }
         };
     }, [theme]);
+
+    // handling config changes
+    useEffect(() => {
+        if (!mapRef.current) return;
+        if (!mapRef.current.loaded()) return;
+
+        if (coordinatesEnabled) {
+            mapRef.current.setLayoutProperty(
+                "coordinates",
+                "visibility",
+                "visible"
+            );
+        } else {
+            mapRef.current.setLayoutProperty(
+                "coordinates",
+                "visibility",
+                "none"
+            );
+        }
+
+        if (heatmapEnabled) {
+            mapRef.current.setLayoutProperty(
+                "coordinates-heatmap",
+                "visibility",
+                "visible"
+            );
+        } else {
+            mapRef.current.setLayoutProperty(
+                "coordinates-heatmap",
+                "visibility",
+                "none"
+            );
+        }
+    }, [coordinatesEnabled, heatmapEnabled]);
 
     // spin animation
     useEffect(() => {
@@ -351,8 +409,9 @@ const MapContainer = () => {
         if (!mapRef.current || !clickedCoords) return;
         mapRef.current.flyTo({
             center: [clickedCoords.coords.lon, clickedCoords.coords.lat],
-            zoom: 10,
+            zoom: 14,
         });
+
         setClickedPointId(clickedCoords._id);
         setClickedCoords(null);
     }, [clickedCoords]);
@@ -364,6 +423,8 @@ const MapContainer = () => {
                 className="w-full h-full relative"
                 ref={mapContainerRef}
             ></div>
+
+            <Crosshair className="absolute top-1/2 left-1/2 pointer-events-none translate-x-[-50%] translate-y-[-50%] text-foreground/40" />
 
             {hoveredPointPos && hoverPointsInFo && (
                 <Card

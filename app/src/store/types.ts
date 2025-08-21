@@ -34,3 +34,11 @@ export type MapPropStoreType = {
     setCurrMouseCoords: (coords: [number, number] | null) => void;
     setZoom: (zoom: number) => void;
 };
+
+export type MapConfigsStoreType = {
+    heatmapEnabled: boolean;
+    coordinatesEnabled: boolean;
+    toggleHeatmap: () => void;
+    toggleCoordinates: () => void;
+    setBothEnabled: () => void;
+};

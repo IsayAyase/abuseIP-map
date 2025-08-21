@@ -1,24 +1,33 @@
 "use client";
 
-import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 
 import { Button } from "@/components/ui/button";
+import { Moon, Sun } from "lucide-react";
 import { useEffect } from "react";
 
 function ThemeBtn({ className }: { className?: string }) {
-    const { setTheme, themes, theme } = useTheme();
+    const {
+        setTheme,
+        themes: [LIGHT, DARK, SYSTEM],
+        systemTheme,
+    } = useTheme();
 
-    const toggle = () =>
+    const toggle = () => {
         setTheme((p) => {
-            return p === "light" ? "dark" : "light";
+            return p === SYSTEM
+                ? systemTheme === DARK
+                    ? LIGHT
+                    : DARK
+                : p === DARK
+                ? LIGHT
+                : DARK;
         });
+    };
 
     useEffect(() => {
         const handleEvent = (e: KeyboardEvent) => {
-            console.log("shit");
             if (e.key === "." && (e.metaKey || e.ctrlKey)) {
-                console.log("shit shit");
                 toggle();
             }
         };
@@ -28,13 +37,14 @@ function ThemeBtn({ className }: { className?: string }) {
         return () => {
             removeEventListener("keydown", handleEvent);
         };
-    }, []);
+    }, [toggle, systemTheme, setTheme]);
 
     return (
         <Button
+            title="Toggle theme"
             variant="outline"
             size="icon"
-            onToggle={toggle}
+            onClick={toggle}
             className={className}
         >
             <Sun className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />

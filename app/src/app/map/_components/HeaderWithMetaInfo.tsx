@@ -1,25 +1,40 @@
 "use client";
 
-import { Separator } from "@/components/ui/separator";
+import LoadingCircle from "@/components/ui/LoadingCircle";
+import {
+    useGetCoordsStore,
+    useGetFullCoordInfoByIdStore,
+} from "@/store/clientStore";
 import { useMapPropsStore } from "@/store/stateStore";
 
 const HeaderWithMetaInfo = () => {
     const { currMouseCoords, zoom } = useMapPropsStore();
+    const { loading: coordsLoading } = useGetCoordsStore();
+    const { loading: infoLoading } = useGetFullCoordInfoByIdStore();
     return (
-        <div className="absolute top-0 left-0 z-10 px-6 py-4">
-            <h3 className="text-5xl md:text-6xl">coordinates</h3>
-            <Separator className="my-1 bg-foreground/30" />
+        <div className="absolute top-0 left-0 z-10 px-6 py-4 h-full w-full pointer-events-none">
+            <h3 className="text-5xl md:text-6xl pr-20 text-foreground/50">
+                coordinates
+            </h3>
             <div className="flex items-center gap-0.5 text-xs">
-                <p>lon: {currMouseCoords?.[0].toFixed(4)}</p>
+                <p>lon: {currMouseCoords?.[0].toFixed(4) || 0}</p>
                 <span>•</span>
-                <p>lat: {currMouseCoords?.[1].toFixed(4)}</p>
+                <p>lat: {currMouseCoords?.[1].toFixed(4) || 0}</p>
                 <span>•</span>
                 <p>zoom: {zoom.toFixed(2)}</p>
+                {(coordsLoading || infoLoading) && (
+                    <div className="mx-2 flex items-center gap-1">
+                        <LoadingCircle className="size-4" />
+                        {coordsLoading && <span>loading coordinates...</span>}
+                        {infoLoading && <span>loading info...</span>}
+                    </div>
+                )}
             </div>
             <div
                 className="absolute inset-0 -z-10"
                 style={{
-                    backgroundImage: `radial-gradient(circle 400px at 0% 50%, var(--background), transparent)`,
+                    backgroundImage:
+                        "radial-gradient(ellipse 600px 175px at 0% 0%, color-mix(in oklab, var(--background) 80%, transparent) 50%, transparent)",
                 }}
             />
         </div>
@@ -27,3 +42,4 @@ const HeaderWithMetaInfo = () => {
 };
 
 export default HeaderWithMetaInfo;
+// rgb(254, 154, 0, 0.5)

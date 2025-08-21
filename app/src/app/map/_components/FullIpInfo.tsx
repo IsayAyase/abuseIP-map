@@ -1,5 +1,6 @@
 "use client";
 
+import LoadingCircle from "@/components/ui/LoadingCircle";
 import { useGetFullCoordInfoByIdStore } from "@/store/clientStore";
 import dayjs from "dayjs";
 import { useEffect } from "react";
@@ -44,7 +45,12 @@ const FullIpInfo = () => {
     if (!clickedPointId) {
         return null;
     } else if (loading) {
-        return <div>Loading...</div>;
+        return (
+            <div className="text-center">
+                <LoadingCircle className="size-4" />
+                <span>loading ip info...</span>
+            </div>
+        );
     } else if (!infos[clickedPointId]) {
         return <div></div>;
     }
@@ -97,12 +103,20 @@ const FullIpInfo = () => {
     ];
     return (
         <div className="w-full flex flex-col gap-1 justify-center text-xs text-left">
-            {data.map((item) => (
-                <div key={item.label} className="grid grid-cols-2 gap-1 w-full">
-                    <p className="text-muted-foreground w-full">{item.label}</p>
-                    <p className="w-full">{item.value}</p>
-                </div>
-            ))}
+            <h4 className="text-sm font-semibold">IP Information</h4>
+            <div className="flex flex-col gap-1 justify-center">
+                {data.map((item) => (
+                    <div
+                        key={item.label}
+                        className="grid grid-cols-2 gap-1 w-full"
+                    >
+                        <p className="text-muted-foreground w-full">
+                            {item.label}
+                        </p>
+                        <p className="w-full">{item.value}</p>
+                    </div>
+                ))}
+            </div>
         </div>
     );
 };
