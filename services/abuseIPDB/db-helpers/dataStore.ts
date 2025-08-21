@@ -1,6 +1,6 @@
 import DataStore from "../models/dataStore";
 
-export const getDataStoreValue = async (
+export const getDataStoreValueFromDB = async (
     key: string
 ): Promise<string | null> => {
     try {
@@ -12,7 +12,7 @@ export const getDataStoreValue = async (
     }
 };
 
-export const setDataStoreValue = async (
+export const setDataStoreValueFromDB = async (
     key: string,
     value: string
 ): Promise<void> => {

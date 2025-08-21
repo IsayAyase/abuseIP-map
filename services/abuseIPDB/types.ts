@@ -1,4 +1,5 @@
 export type AbuseIPDBBlacklistDataType = {
+    _id: string;
     ipAddress: string;
     countryCode: string;
     abuseConfidenceScore: number;

@@ -8,23 +8,22 @@ import type {
 export const chuckIps = (
     data: AbuseIPDBBlacklistType,
     chunkSize: number = 100
-): string[][] => {
-    const chunks: string[][] = [];
+): AbuseIPDBBlacklistDataType[][] => {
+    const chunks: AbuseIPDBBlacklistDataType[][] = [];
     const ipsData = data.data;
     for (let i = 0; i < ipsData.length; i += 1) {
         if (i % chunkSize === 0) {
             chunks.push([]);
         }
-        chunks[chunks.length - 1].push(ipsData[i].ipAddress);
+        chunks[chunks.length - 1].push(ipsData[i]);
     }
     return chunks;
 };
 
 export const mergeAbuseIpdbAndIpInfo = (
-    abuseIPDB: AbuseIPDBBlacklistType,
+    abuseIPData: AbuseIPDBBlacklistDataType[],
     ipInfo: IpInfoType[]
 ) => {
-    const abuseIPData = abuseIPDB.data;
     const abuseIPMap = new Map<string, AbuseIPDBBlacklistDataType>();
     for (let i = 0; i < abuseIPData.length; i += 1) {
         abuseIPMap.set(abuseIPData[i].ipAddress, abuseIPData[i]);
