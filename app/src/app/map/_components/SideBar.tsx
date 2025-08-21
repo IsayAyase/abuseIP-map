@@ -3,14 +3,14 @@ import ThemeBtn from "@/components/ThemeBtn";
 
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { useSideBarStore } from "@/store/stateStore";
 import { ArrowLeft } from "lucide-react";
-import { useState } from "react";
 import DateSelector from "./DateSelector";
 import FullIpInfo from "./FullIpInfo";
 import MapConfigs from "./MapConfigs";
 
 const SideBar = () => {
-    const [expanded, setExpanded] = useState<boolean>(false);
+    const { expanded, toggle } = useSideBarStore();
 
     return (
         <div
@@ -31,7 +31,7 @@ const SideBar = () => {
                     variant="outline"
                     size="icon"
                     className="rounded-e-none"
-                    onClick={() => setExpanded((p) => !p)}
+                    onClick={() => toggle()}
                 >
                     <ArrowLeft
                         data-expanded={expanded}

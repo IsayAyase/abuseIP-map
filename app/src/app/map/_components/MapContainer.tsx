@@ -6,7 +6,11 @@ import {
     useGetCoordsStore,
     useGetFullCoordInfoByIdStore,
 } from "@/store/clientStore";
-import { useMapConfigsStore, useMapPropsStore } from "@/store/stateStore";
+import {
+    useMapConfigsStore,
+    useMapPropsStore,
+    useSideBarStore,
+} from "@/store/stateStore";
 import { Crosshair } from "lucide-react";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
@@ -72,6 +76,7 @@ const MapContainer = () => {
     const { setClickedPointId } = useGetFullCoordInfoByIdStore();
     const { zoom, setZoom, setCurrMouseCoords } = useMapPropsStore();
     const { coordinatesEnabled, heatmapEnabled } = useMapConfigsStore();
+    const { setExpanded, setExpendDateSelector } = useSideBarStore();
 
     const mapRef = useRef<mapboxgl.Map | null>(null);
     const mapContainerRef = useRef<HTMLDivElement>(null);
@@ -413,6 +418,8 @@ const MapContainer = () => {
         });
 
         setClickedPointId(clickedCoords._id);
+        setExpanded(true);
+        setExpendDateSelector(false);
         setClickedCoords(null);
     }, [clickedCoords]);
 

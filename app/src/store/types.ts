@@ -27,6 +27,16 @@ export type GetFullCoordInfoByIdStoreType = {
     setError: (error: string | null) => void;
 };
 
+export type SideBarStoreType = {
+    expanded: boolean;
+    toggle: () => void;
+    setExpanded: (expanded: boolean) => void;
+
+    expendDateSelector: boolean;
+    toggleExpendDateSelector: () => void;
+    setExpendDateSelector: (expend: boolean) => void;
+};
+
 export type MapPropStoreType = {
     currMouseCoords: [number, number] | null;
     zoom: number;

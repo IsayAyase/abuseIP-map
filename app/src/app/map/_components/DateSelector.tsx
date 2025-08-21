@@ -7,11 +7,14 @@ import {
 } from "@/components/ui/accordion";
 
 import { useGetCoordsStore } from "@/store/clientStore";
+import { useSideBarStore } from "@/store/stateStore";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import { getCoords } from "../_lib/clientApiCalls";
 
 const DateSelector = () => {
+    const { expendDateSelector, setExpendDateSelector } = useSideBarStore();
+
     const [dates, setDates] = useState<
         {
             date: string;
@@ -85,13 +88,21 @@ const DateSelector = () => {
         setError,
         setCoordsInfo,
     ]);
+
     return (
-        <Accordion type="single" collapsible defaultValue="dates">
+        <Accordion
+            type="single"
+            collapsible
+            onValueChange={(value) => {
+                setExpendDateSelector(value === "dates");
+            }}
+            value={expendDateSelector ? "dates" : ""}
+        >
             <AccordionItem value="dates">
-                <AccordionTrigger className="flex-row-reverse">
+                <AccordionTrigger className="flex-row-reverse py-0">
                     Dates
                 </AccordionTrigger>
-                <AccordionContent>
+                <AccordionContent className="pb-0">
                     <ul className="flex flex-col gap-1 text-sm">
                         {dates.map((date) => (
                             <li

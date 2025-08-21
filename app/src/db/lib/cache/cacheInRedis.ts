@@ -64,7 +64,7 @@ export const setInCache = async (date: string, data: any) => {
         throw new Error("Failed to set in cache");
     }
     console.log(`SET_REDIS> Set ${date} in cache`);
-    autoRemoveFromCache();
+    autoRemoveFromCache(10);
 };
 
 /**

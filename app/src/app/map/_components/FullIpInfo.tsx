@@ -46,9 +46,9 @@ const FullIpInfo = () => {
         return null;
     } else if (loading) {
         return (
-            <div className="text-center">
+            <div className="text-center flex justify-between items-center gap-2">
+                <h4 className="text-sm font-semibold">IP Information</h4>
                 <LoadingCircle className="size-4" />
-                <span>loading ip info...</span>
             </div>
         );
     } else if (!infos[clickedPointId]) {
@@ -62,7 +62,7 @@ const FullIpInfo = () => {
         },
         {
             label: "Last Reported At",
-            value: dayjs(info.lastReportedAt).format("YYYY-MM-DD HH:mm:ss"),
+            value: dayjs(info.lastReportedAt).format("YYYY-MM-DD HH:mm:ss A"),
         },
         {
             label: "Abuse Confidence Score",
@@ -102,18 +102,20 @@ const FullIpInfo = () => {
         },
     ];
     return (
-        <div className="w-full flex flex-col gap-1 justify-center text-xs text-left">
+        <div className="w-full flex flex-col gap-2 justify-center text-xs text-left">
             <h4 className="text-sm font-semibold">IP Information</h4>
-            <div className="flex flex-col gap-1 justify-center">
-                {data.map((item) => (
+            <div className="flex flex-col justify-center">
+                {data.map((item, idx) => (
                     <div
                         key={item.label}
-                        className="grid grid-cols-2 gap-1 w-full"
+                        className={`grid grid-cols-2 gap-1 w-full ${
+                            idx === data.length - 1 ? "border-y" : "border-t"
+                        } border-x border-border`}
                     >
-                        <p className="text-muted-foreground w-full">
+                        <p className="w-full border-r border-border p-1">
                             {item.label}
                         </p>
-                        <p className="w-full">{item.value}</p>
+                        <p className="w-full font-normal p-1">{item.value}</p>
                     </div>
                 ))}
             </div>
