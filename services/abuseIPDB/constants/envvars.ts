@@ -8,7 +8,6 @@ const envvars = {
     ABUSE_IPDB_KEY: process.env.ABUSE_IPDB_KEY as string,
     MONGO_URI: process.env.MONGO_URI as string,
     SERVICE_ACCESS_KEY: process.env.SERVICE_ACCESS_KEY as string,
-    SESSION_SECRET: process.env.SESSION_SECRET as string,
     PORT: parseInt((process.env.PORT as string) || "5000") || 5000,
 };
 

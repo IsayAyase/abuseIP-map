@@ -1,11 +1,10 @@
 import store from "../configs/store";
 import { insertAbuseIpWithInfo } from "../db-helpers/abuseIpWithInfo";
+import { getDataStoreValue, setDataStoreValue } from "../db-helpers/dataStore";
 import { chuckIps, mergeAbuseIpdbAndIpInfo } from "../lib/dataProcessors";
 import { APIError } from "../lib/error";
-import { readJsonFromFile, writeJsonToFile } from "../lib/jsonFsHandler";
 import { getBlacklist } from "../services/abuseIPDB";
 import { getIpInfoForIpChunks } from "../services/ipPAI";
-import type { AbuseIPDBBlacklistType } from "../types";
 
 const abuseIpWithInfoPipeline = async () => {
     if (
@@ -33,21 +32,15 @@ const abuseIpWithInfoPipeline = async () => {
 
     // ---------------------------------------------------------------------------
 
-    const prevBlacklistMeta =
-        (readJsonFromFile("./constants/blacklistMeta.json") as Pick<
-            AbuseIPDBBlacklistType,
-            "meta"
-        >) || null;
+    const prevGenAt = await getDataStoreValue("abuseIpGeneratedAt");
 
-    if (
-        prevBlacklistMeta &&
-        prevBlacklistMeta.meta.generatedAt === ipData.meta.generatedAt
-    ) {
+    if (prevGenAt && prevGenAt === ipData.meta.generatedAt.toString()) {
         throw new APIError({ message: "No new data to process" });
     } else {
-        writeJsonToFile("./constants/blacklistMeta.json", {
-            meta: ipData.meta,
-        });
+        await setDataStoreValue(
+            "abuseIpGeneratedAt",
+            ipData.meta.generatedAt.toString()
+        );
     }
 
     // ---------------------------------------------------------------------------
