@@ -42,7 +42,7 @@ function ThemeBtn({ className }: { className?: string }) {
     return (
         <Button
             title="Toggle theme"
-            variant="outline"
+            variant="secondary"
             size="icon"
             onClick={toggle}
             className={className}

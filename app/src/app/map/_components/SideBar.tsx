@@ -28,7 +28,7 @@ const SideBar = () => {
             <div className="absolute top-4 left-0 -translate-x-full flex flex-col gap-2 items-end">
                 <Button
                     title="Toggle Sidebar"
-                    variant="outline"
+                    variant="secondary"
                     size="icon"
                     className="rounded-e-none bg-background"
                     onClick={() => toggle()}
