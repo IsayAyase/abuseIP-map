@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import PIPELINE_CONFIG from "../configs/pipelineConfig";
 import type { AbuseIpWithInfoType, IpInfoType } from "../types";
 
 const IpInfoTypeSchema = new mongoose.Schema<IpInfoType>(
@@ -86,8 +87,13 @@ const abuseIpWithInfoSchema = new mongoose.Schema<AbuseIpWithInfoType>(
     },
     {
         timestamps: true,
-        expireAfterSeconds: 30 * 24 * 60 * 60,
-        // dont know how to make it more clear that it's 30 days in seconds, you moron!
+    }
+);
+
+abuseIpWithInfoSchema.index(
+    { lastReportedAt: 1 },
+    {
+        expireAfterSeconds: PIPELINE_CONFIG.DB_ABUSE_IP_WITH_INFO_EXPIRATION,
     }
 );
 
