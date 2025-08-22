@@ -11,7 +11,7 @@ const BottomNotes = () => {
         >
             <p>
                 <span className="font-bold">Source:</span>
-                Abuse IPDB, IP API, MapBox
+                Abuse IPDB, IP API, MapTiler, OpenStreetMap
             </p>
             <p>
                 <span className="font-bold">Note:</span> This map is for

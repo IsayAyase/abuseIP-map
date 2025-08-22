@@ -1,3 +1,4 @@
+import PIPELINE_CONFIG from "../configs/pipelineConfig";
 import store from "../configs/store";
 import { insertAbuseIpWithInfo } from "../db-helpers/abuseIpWithInfo";
 import {
@@ -42,7 +43,9 @@ const abuseIpWithInfoPipeline = async () => {
         const diff = currentTime - prevGenAtTime;
         const hours = Math.floor(diff / (60 * 60 * 1000));
 
-        if (hours <= 6) {
+        if (
+            hours <= PIPELINE_CONFIG.REFETCH_ABUSE_IP_WITH_INFO_AFTER_IN_HOURS
+        ) {
             throw new APIError({
                 message: `Last update was ${hours} hours ago. Please wait at least 6 hours to fetch new data.`,
             });
@@ -66,11 +69,17 @@ const abuseIpWithInfoPipeline = async () => {
         }
         await bulkInsertBlacklist(ipData.data);
         console.log("Blacklist data inserted into cache");
+    } else {
+        console.log(
+            "Blacklist cache is not empty, proceeding with existing data..."
+        );
     }
     // ---------------------------------------------------------------------------
 
-    const LIMIT = 100;
+    const LIMIT = PIPELINE_CONFIG.CHUCK_SIZE;
+    const MAX_ITERATIONS = PIPELINE_CONFIG.NUMBER_OF_ITERATIONS_PER_REQUEST;
     let currentCount = 0;
+    let currentIteration = 0;
     do {
         let ipDataChunks = await bulkSelectBlacklist(LIMIT);
         currentCount = ipDataChunks.length;
@@ -79,18 +88,24 @@ const abuseIpWithInfoPipeline = async () => {
             break;
         }
         const ips = ipDataChunks.map((ip) => ip.ipAddress);
+        const ids = ipDataChunks.map((ip) => ip._id);
         const ipInfo: IpInfoType[] = await fetchBulkIpInfo(ips);
 
         const mergedData = mergeAbuseIpdbAndIpInfo(ipDataChunks, ipInfo);
         const flag = await insertAbuseIpWithInfo(mergedData);
-        if (flag) {
+        if (!flag) {
             throw new APIError({ message: "Error saving data to db" });
         }
 
-        await bulkDeleteBlacklist(ips);
-        console.log("\nData processed and saved");
-        await sleep(5000);
-    } while (currentCount === LIMIT || currentCount > 0);
+        await bulkDeleteBlacklist(ids);
+        console.log("Data processed and saved \n");
+        currentIteration++;
+        await sleep(PIPELINE_CONFIG.SLEEP_BETWEEN_REQUESTS_IN_MS);
+    } while (
+        currentCount === LIMIT ||
+        currentCount > 0 ||
+        currentIteration <= MAX_ITERATIONS
+    );
 
     console.log("IpInfo fetched");
     // ---------------------------------------------------------------------------
