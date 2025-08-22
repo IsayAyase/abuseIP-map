@@ -14,7 +14,7 @@ const HeaderWithMetaInfo = () => {
     return (
         <div className="absolute top-0 left-0 z-10 px-6 py-4 h-full w-full pointer-events-none">
             <h3 className="text-5xl md:text-6xl pr-20 text-foreground/60">
-                coordinates
+                mapware
             </h3>
             <div className="flex items-center gap-0.5 text-xs">
                 <p>lon: {currMouseCoords?.[0].toFixed(4) || 0}</p>

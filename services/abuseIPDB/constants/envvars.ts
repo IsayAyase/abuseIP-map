@@ -9,6 +9,7 @@ const envvars = {
     MONGO_URI: process.env.MONGO_URI as string,
     SERVICE_ACCESS_KEY: process.env.SERVICE_ACCESS_KEY as string,
     PORT: parseInt((process.env.PORT as string) || "5000") || 5000,
+    DBNAME: "abuseipmap",
 };
 
 export default envvars;
