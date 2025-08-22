@@ -38,9 +38,11 @@ const abuseIpWithInfoPipeline = async () => {
         console.log("Blacklist cache is empty, fetching new data...");
         // ---------------------------------------------------------------------------
         const prevGenAt = await getDataStoreValueFromDB("abuseIpGeneratedAt");
-        const prevGenAtTime = prevGenAt ? new Date(prevGenAt).getTime() : 0;
+        const prevFetchTime = prevGenAt
+            ? new Date(prevGenAt.updatedAt).getTime()
+            : 0;
         const currentTime = new Date().getTime();
-        const diff = currentTime - prevGenAtTime;
+        const diff = currentTime - prevFetchTime;
         const hours = Math.floor(diff / (60 * 60 * 1000));
 
         if (
@@ -64,7 +66,10 @@ const abuseIpWithInfoPipeline = async () => {
             "abuseIpGeneratedAt",
             ipData.meta.generatedAt.toString()
         );
-        if (prevGenAt && prevGenAt === ipData.meta.generatedAt.toString()) {
+        if (
+            prevGenAt &&
+            prevGenAt.value === ipData.meta.generatedAt.toString()
+        ) {
             throw new APIError({ message: "No new data to process" });
         }
         await bulkInsertBlacklist(ipData.data);

@@ -1,11 +1,9 @@
 import DataStore from "../models/dataStore";
 
-export const getDataStoreValueFromDB = async (
-    key: string
-): Promise<string | null> => {
+export const getDataStoreValueFromDB = async (key: string) => {
     try {
         const data = await DataStore.findOne({ key });
-        return data ? data.value : null;
+        return data ? data : null;
     } catch (error) {
         console.error("Error fetching data store value:", error);
         return null;
