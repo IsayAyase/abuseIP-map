@@ -11,55 +11,16 @@ import {
     useMapPropsStore,
     useSideBarStore,
 } from "@/store/stateStore";
+import * as maptilersdk from "@maptiler/sdk";
 import { Crosshair } from "lucide-react";
-import mapboxgl from "mapbox-gl";
-import "mapbox-gl/dist/mapbox-gl.css";
 import { useTheme } from "next-themes";
 import { useEffect, useRef, useState } from "react";
 
 const INITIAL_CENTER = [74, 24];
 
-const LABEL_LAYERS = [
-    "country-label",
-    "state-label",
-    "settlement-major-label",
-    "settlement-minor-label",
-    "place-city-large-n",
-    "place-city-large-s",
-    "place-city-medium-n",
-    "place-city-medium-s",
-    "place-city-small-n",
-    "place-city-small-s",
-    "place-town",
-    "place-village",
-    "poi-label",
-    "transit-label",
-    "road-label",
-];
-const OCEAN_LABEL_LAYERS = [
-    "water-point-label",
-    "waterway-label",
-    "marine-label",
-    "ocean-label",
-    "sea-label",
-];
-const COUNTRY_BORDER_LAYERS = [
-    "admin-0-boundary",
-    "admin-0-boundary-bg",
-    "admin-0-boundary-disputed",
-    "country-boundary",
-];
-const CONTINENT_LABEL_LAYERS = [
-    "continent-label",
-    "natural-line-label",
-    "natural-point-label",
-];
-const ALL_LAYERS = [
-    ...LABEL_LAYERS,
-    ...OCEAN_LABEL_LAYERS,
-    ...COUNTRY_BORDER_LAYERS,
-    ...CONTINENT_LABEL_LAYERS,
-];
+const LABEL_LAYERS = ["Country labels", "Continent labels", "Ocean labels"];
+
+const ALL_LAYERS = [...LABEL_LAYERS];
 
 const HIDE_TILE_ZOOM_LEVEL = 6;
 
@@ -78,7 +39,7 @@ const MapContainer = () => {
     const { coordinatesEnabled, heatmapEnabled } = useMapConfigsStore();
     const { setExpanded, setExpendDateSelector } = useSideBarStore();
 
-    const mapRef = useRef<mapboxgl.Map | null>(null);
+    const mapRef = useRef<maptilersdk.Map | null>(null);
     const mapContainerRef = useRef<HTMLDivElement>(null);
     const userInteracting = useRef<boolean>(false);
 
@@ -109,13 +70,6 @@ const MapContainer = () => {
         setHoveredPointPos({ x, y });
     };
 
-    const removingMapBoxLogo = () => {
-        const logo = document.querySelector(".mapboxgl-control-container");
-        if (logo) {
-            logo.remove();
-        }
-    };
-
     // map load
     useEffect(() => {
         if (!mapContainerRef.current) return;
@@ -123,22 +77,25 @@ const MapContainer = () => {
         const style =
             theme === "system"
                 ? systemTheme === "dark"
-                    ? "mapbox://styles/mapbox/dark-v11"
-                    : "mapbox://styles/mapbox/light-v11"
+                    ? maptilersdk.MapStyle.DATAVIZ.DARK
+                    : maptilersdk.MapStyle.DATAVIZ.LIGHT
                 : theme === "dark"
-                ? "mapbox://styles/mapbox/dark-v11"
-                : "mapbox://styles/mapbox/light-v11";
+                ? maptilersdk.MapStyle.DATAVIZ.DARK
+                : maptilersdk.MapStyle.DATAVIZ.LIGHT;
 
-        mapRef.current = new mapboxgl.Map({
-            accessToken: process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN as string,
-            container: mapContainerRef.current,
-            center: INITIAL_CENTER as mapboxgl.LngLatLike,
-            zoom: zoom,
+        mapRef.current = new maptilersdk.Map({
+            container: mapContainerRef.current as HTMLElement,
+            center: INITIAL_CENTER as [number, number],
+            zoom,
             style,
+            hash: true,
+            apiKey: process.env.NEXT_PUBLIC_MAPTILER_API_KEY,
+            projection: "globe",
             interactive: true,
         });
 
-        removingMapBoxLogo();
+        // to handle the zoom value from url!
+        setZoom(mapRef.current.getZoom());
 
         function hideLabel(shouldHideLabels: boolean) {
             ALL_LAYERS.forEach((layerId) => {
@@ -164,6 +121,8 @@ const MapContainer = () => {
         mapRef.current.on("load", () => {
             if (!mapRef.current) return;
             hideLabel(true); // initial hide
+
+            console.log(mapRef.current.getStyle().layers.map((l) => l.id));
 
             mapRef.current.addSource("coordinates", {
                 type: "geojson",
@@ -400,7 +359,7 @@ const MapContainer = () => {
 
             const src = mapRef.current.getSource(
                 "coordinates"
-            ) as mapboxgl.GeoJSONSource;
+            ) as maptilersdk.GeoJSONSource;
             if (src) {
                 src.setData(geojson);
             }
@@ -427,7 +386,7 @@ const MapContainer = () => {
         <div className="fixed top-0 left-0 w-full h-full">
             <div
                 id="map-container"
-                className="w-full h-full relative"
+                className="w-full h-full relative cursor-grab"
                 ref={mapContainerRef}
             ></div>
 

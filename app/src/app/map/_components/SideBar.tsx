@@ -30,7 +30,7 @@ const SideBar = () => {
                     title="Toggle Sidebar"
                     variant="outline"
                     size="icon"
-                    className="rounded-e-none"
+                    className="rounded-e-none bg-background"
                     onClick={() => toggle()}
                 >
                     <ArrowLeft
@@ -38,7 +38,7 @@ const SideBar = () => {
                         className="data-[expanded=true]:rotate-180 transition-transform duration-300 ease-in-out delay-300"
                     />
                 </Button>
-                <ThemeBtn className="rounded-e-none" />
+                <ThemeBtn className="rounded-e-none bg-background" />
             </div>
         </div>
     );
