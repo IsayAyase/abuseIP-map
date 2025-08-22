@@ -3,20 +3,19 @@
 import { Button } from "@/components/ui/button";
 import { useMapConfigsStore } from "@/store/stateStore";
 
-const MapConfigs = () => {
+export const MapDataVisConfigs = () => {
     const {
         coordinatesEnabled,
         heatmapEnabled,
-        setBothEnabled,
         toggleCoordinates,
         toggleHeatmap,
     } = useMapConfigsStore();
     return (
-        <div className="border border-border rounded-lg p-1 grid grid-cols-3 items-center gap-1">
+        <div className="py-1 mx-4 grid grid-cols-2 items-center gap-4">
             <Button
-                data-active={heatmapEnabled && !coordinatesEnabled}
-                variant={"ghost"}
-                className="text-xs h-6 data-[active=true]:bg-accent data-[active=true]:text-accent-foreground"
+                data-active={heatmapEnabled}
+                variant={"activeMode"}
+                className="text-xs h-6"
                 size={"sm"}
                 onClick={() => {
                     toggleHeatmap();
@@ -25,29 +24,47 @@ const MapConfigs = () => {
                 Heatmap
             </Button>
             <Button
-                data-active={coordinatesEnabled && !heatmapEnabled}
-                variant={"ghost"}
-                className="text-xs h-6 data-[active=true]:bg-accent data-[active=true]:text-accent-foreground"
+                data-active={coordinatesEnabled}
+                variant={"activeMode"}
+                className="text-xs h-6"
                 size={"sm"}
                 onClick={() => {
                     toggleCoordinates();
                 }}
             >
-                Coordinates
-            </Button>
-            <Button
-                data-active={coordinatesEnabled && heatmapEnabled}
-                variant={"ghost"}
-                className="text-xs h-6 data-[active=true]:bg-accent data-[active=true]:text-accent-foreground"
-                size={"sm"}
-                onClick={() => {
-                    setBothEnabled();
-                }}
-            >
-                Both
+                Coords
             </Button>
         </div>
     );
 };
 
-export default MapConfigs;
+export const MapGlobeConfigs = () => {
+    const { spinEnabled, toggleSpin, globeEnabled, toggleGlobe } =
+        useMapConfigsStore();
+    return (
+        <div className="py-1 mx-4 grid grid-cols-2 items-center gap-4">
+            <Button
+                variant={"activeMode"}
+                className="text-xs h-6"
+                size={"sm"}
+                onClick={() => {
+                    toggleSpin();
+                }}
+                data-active={spinEnabled}
+            >
+                Spin Globe
+            </Button>
+            <Button
+                variant={"activeMode"}
+                className="text-xs h-6"
+                size={"sm"}
+                onClick={() => {
+                    toggleGlobe();
+                }}
+                data-active={globeEnabled}
+            >
+                Globe View
+            </Button>
+        </div>
+    );
+};

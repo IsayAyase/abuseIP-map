@@ -1,4 +1,5 @@
 import AbuseIpWithInfo from "@/db/models/abuseIpWithInfo";
+import dayjs from "dayjs";
 import mongoose from "mongoose";
 import connectDB from "../connect";
 import { getFromCache, setInCache } from "../lib/cache/cacheInRedis";
@@ -8,22 +9,21 @@ import type { AbuseIpWithInfoType, CoordOnlyInfoType } from "../types";
  * @param reportedAt Date | string (YYYY-MM-DD)
  * @returns
  */
-export const getCoordsOnlyAbuseIpWithInfo = async (
-    reportedAt: string
-): Promise<CoordOnlyInfoType[]> => {
+export const getCoordsOnlyAbuseIpWithInfo = async (): Promise<
+    CoordOnlyInfoType[]
+> => {
     try {
-        const cachedData = await getFromCache(reportedAt);
+        const endOfDay = new Date();
+        const startOfDay = new Date(endOfDay.getTime() - 24 * 60 * 60 * 1000);
+        const cacheKey = dayjs(endOfDay).format("YYYY_MM_DD_hh_00");
+
+        const cachedData = await getFromCache(cacheKey);
         if (cachedData) {
             return cachedData;
         }
 
         console.log("DB> Fetching coords from database");
         await connectDB();
-
-        const startOfDay = new Date(reportedAt);
-        startOfDay.setHours(0, 0, 0, 0);
-        const endOfDay = new Date(reportedAt);
-        endOfDay.setHours(23, 59, 59, 999);
 
         const abuseIpsWithInfo: CoordOnlyInfoType[] =
             await AbuseIpWithInfo.aggregate([
@@ -46,7 +46,7 @@ export const getCoordsOnlyAbuseIpWithInfo = async (
                 },
             ]);
 
-        setInCache(reportedAt, abuseIpsWithInfo);
+        setInCache(cacheKey, abuseIpsWithInfo);
         return abuseIpsWithInfo;
     } catch (error) {
         console.error(error);

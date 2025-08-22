@@ -43,16 +43,24 @@ const FullIpInfo = () => {
     }, [clickedPointId]);
 
     if (!clickedPointId) {
-        return null;
+        return (
+            <div className="text-sm text-right mx-4">
+                {"Click on a coord point!"}
+            </div>
+        );
     } else if (loading) {
         return (
-            <div className="text-center flex justify-between items-center gap-2">
+            <div className="text-center flex justify-between items-center gap-2 px-4">
                 <h4 className="text-sm font-semibold">IP Information</h4>
                 <LoadingCircle className="size-4" />
             </div>
         );
     } else if (!infos[clickedPointId]) {
-        return <div></div>;
+        return (
+            <div className="text-sm text-right mx-4">
+                {"No coordinate info found!"}
+            </div>
+        );
     }
     const info = infos[clickedPointId];
     const data = [
@@ -102,7 +110,7 @@ const FullIpInfo = () => {
         },
     ];
     return (
-        <div className="w-full flex flex-col gap-2 justify-center text-xs text-left">
+        <div className="w-full flex flex-col gap-2 justify-center text-xs text-left px-4">
             <h4 className="text-sm font-semibold">IP Information</h4>
             <div className="flex flex-col justify-center">
                 {data.map((item, idx) => (

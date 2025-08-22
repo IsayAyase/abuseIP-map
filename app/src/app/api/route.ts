@@ -1,6 +1,4 @@
-import type { NextRequest } from "next/server";
-
-export async function GET(_: NextRequest) {
+export async function GET() {
     return Response.json(
         { success: true, message: "API is working!" },
         {

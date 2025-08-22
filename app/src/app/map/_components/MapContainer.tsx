@@ -12,7 +12,7 @@ import {
     useSideBarStore,
 } from "@/store/stateStore";
 import * as maptilersdk from "@maptiler/sdk";
-import { Crosshair } from "lucide-react";
+import { Plus } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useEffect, useRef, useState } from "react";
 
@@ -29,21 +29,18 @@ const HOVER_POPUP_WIDTH_PX = 110;
 
 const MapContainer = () => {
     const { theme, systemTheme } = useTheme();
-    const {
-        coordsInfo: allCoordsInfo,
-        loading,
-        selectedDate,
-    } = useGetCoordsStore();
+    const { coordsInfo } = useGetCoordsStore();
     const { setClickedPointId } = useGetFullCoordInfoByIdStore();
     const { zoom, setZoom, setCurrMouseCoords } = useMapPropsStore();
-    const { coordinatesEnabled, heatmapEnabled } = useMapConfigsStore();
+    const { coordinatesEnabled, heatmapEnabled, spinEnabled, globeEnabled } =
+        useMapConfigsStore();
     const { setExpanded, setExpendDateSelector } = useSideBarStore();
 
     const mapRef = useRef<maptilersdk.Map | null>(null);
     const mapContainerRef = useRef<HTMLDivElement>(null);
     const userInteracting = useRef<boolean>(false);
 
-    const [coordsInfo, setCoordsInfo] = useState<CoordOnlyInfoType[]>([]);
+    const [mapLoaded, setMapLoaded] = useState<boolean>(false);
     const [hoverPointsInFo, setHoverPointsInFo] =
         useState<CoordOnlyInfoType | null>(null);
     const [hoveredPointPos, setHoveredPointPos] = useState<{
@@ -73,6 +70,7 @@ const MapContainer = () => {
     // map load
     useEffect(() => {
         if (!mapContainerRef.current) return;
+        setMapLoaded(false);
 
         const style =
             theme === "system"
@@ -90,7 +88,7 @@ const MapContainer = () => {
             style,
             hash: true,
             apiKey: process.env.NEXT_PUBLIC_MAPTILER_API_KEY,
-            projection: "globe",
+            projection: globeEnabled ? "globe" : "mercator",
             interactive: true,
         });
 
@@ -120,9 +118,8 @@ const MapContainer = () => {
 
         mapRef.current.on("load", () => {
             if (!mapRef.current) return;
+            setMapLoaded(true);
             hideLabel(true); // initial hide
-
-            console.log(mapRef.current.getStyle().layers.map((l) => l.id));
 
             mapRef.current.addSource("coordinates", {
                 type: "geojson",
@@ -142,14 +139,16 @@ const MapContainer = () => {
                         ["linear"],
                         ["zoom"],
                         1,
+                        1,
+                        3,
                         2,
-                        3,
-                        3,
                         5,
-                        5,
+                        3,
                         7,
-                        6,
+                        5,
+                        11,
                         8,
+                        13,
                         10,
                     ],
                     "circle-color": "#e7000b",
@@ -245,7 +244,7 @@ const MapContainer = () => {
                 mapRef.current.remove();
             }
         };
-    }, [theme]);
+    }, [theme, globeEnabled]);
 
     // handling config changes
     useEffect(() => {
@@ -283,7 +282,7 @@ const MapContainer = () => {
 
     // spin animation
     useEffect(() => {
-        if (!mapRef.current) return;
+        if (!mapRef.current || !mapLoaded || !spinEnabled) return;
 
         const onInteractionStart = () => {
             userInteracting.current = true;
@@ -326,20 +325,13 @@ const MapContainer = () => {
             mapRef.current.off("mouseup", onInteractionEnd);
             mapRef.current.off("touchend", onInteractionEnd);
         };
-    }, []);
-
-    // fetch coordinates
-    useEffect(() => {
-        if (!selectedDate || loading) return;
-
-        const coordsInfo = allCoordsInfo[selectedDate] || [];
-        setCoordsInfo(coordsInfo);
-    }, [allCoordsInfo, selectedDate]);
+    }, [spinEnabled, mapLoaded]);
 
     // update coordinates on map
     useEffect(() => {
         function updateCoordinates() {
             if (!mapRef.current) return;
+            if (!mapLoaded) return;
             if (!coordsInfo || coordsInfo.length === 0) return;
 
             const geojson: GeoJSON.FeatureCollection = {
@@ -366,7 +358,7 @@ const MapContainer = () => {
         }
 
         updateCoordinates();
-    }, [coordsInfo]);
+    }, [coordsInfo, mapLoaded, theme]);
 
     // click center the point
     useEffect(() => {
@@ -386,11 +378,11 @@ const MapContainer = () => {
         <div className="fixed top-0 left-0 w-full h-full">
             <div
                 id="map-container"
-                className="w-full h-full relative cursor-grab"
+                className="w-full h-full relative cursor-grab focus-visible:outline-none"
                 ref={mapContainerRef}
             ></div>
 
-            <Crosshair className="absolute top-1/2 left-1/2 pointer-events-none translate-x-[-50%] translate-y-[-50%] text-foreground/40" />
+            <Plus className="absolute top-1/2 left-1/2 pointer-events-none translate-x-[-50%] translate-y-[-50%] text-foreground/40" />
 
             {hoveredPointPos && hoverPointsInFo && (
                 <Card

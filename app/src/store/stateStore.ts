@@ -24,18 +24,25 @@ export const useMapPropsStore = create<MapPropStoreType>((set) => ({
 }));
 
 export const useMapConfigsStore = create<MapConfigsStoreType>((set) => ({
+    globeEnabled: true,
+    spinEnabled: true,
     heatmapEnabled: true,
     coordinatesEnabled: true,
+
+    toggleGlobe: () =>
+        set((state) => ({
+            globeEnabled: !state.globeEnabled,
+        })),
+    toggleSpin: () =>
+        set((state) => ({
+            spinEnabled: !state.spinEnabled,
+        })),
     toggleHeatmap: () =>
-        set({
-            heatmapEnabled: true,
-            coordinatesEnabled: false,
-        }),
+        set((state) => ({
+            heatmapEnabled: !state.heatmapEnabled,
+        })),
     toggleCoordinates: () =>
-        set({
-            coordinatesEnabled: true,
-            heatmapEnabled: false,
-        }),
-    setBothEnabled: () =>
-        set({ heatmapEnabled: true, coordinatesEnabled: true }),
+        set((state) => ({
+            coordinatesEnabled: !state.coordinatesEnabled,
+        })),
 }));

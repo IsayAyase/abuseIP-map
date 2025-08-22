@@ -1,15 +1,10 @@
 import { createClient } from "redis";
-
-const REDIS_USERNAME = process.env.REDIS_USERNAME as string;
-const REDIS_PASSWORD = process.env.REDIS_PASSWORD as string;
+import cacheConfig from "./config";
 
 const client = createClient({
-    username: REDIS_USERNAME,
-    password: REDIS_PASSWORD,
-    socket: {
-        host: "redis-13518.crce206.ap-south-1-1.ec2.redns.redis-cloud.com",
-        port: 13518,
-    },
+    username: cacheConfig.REDIS_USERNAME,
+    password: cacheConfig.REDIS_PASSWORD,
+    socket: cacheConfig.REDIS_SOCKET,
 });
 
 const connect = async () => {
@@ -31,7 +26,7 @@ export const autoRemoveFromCache = async (maxHistory: number = 7) => {
         dates.add(date);
     }
 
-    const keys = await client.KEYS(`coordsCache:*`);
+    const keys = await client.KEYS(`${cacheConfig.cacheKeyPrefix}:*`);
     const removeKeys = keys.filter((key) => !dates.has(key.split(":")[1]));
     if (removeKeys.length === 0) return;
 
@@ -46,7 +41,7 @@ export const autoRemoveFromCache = async (maxHistory: number = 7) => {
 export const isInCache = async (date: string) => {
     await connect();
 
-    const exists = await client.EXISTS(`coordsCache:${date}`);
+    const exists = await client.EXISTS(`${cacheConfig.cacheKeyPrefix}:${date}`);
     if (exists === null) {
         throw new Error("Failed to check if exists in cache");
     }
@@ -59,12 +54,20 @@ export const isInCache = async (date: string) => {
 export const setInCache = async (date: string, data: any) => {
     await connect();
 
-    const res = await client.SET(`coordsCache:${date}`, JSON.stringify(data));
+    const res = await client.SET(
+        `${cacheConfig.cacheKeyPrefix}:${date}`,
+        JSON.stringify(data),
+        {
+            expiration: {
+                type: "EX",
+                value: cacheConfig.expiration,
+            },
+        }
+    );
     if (res === null) {
         throw new Error("Failed to set in cache");
     }
     console.log(`SET_REDIS> Set ${date} in cache`);
-    autoRemoveFromCache(10);
 };
 
 /**
@@ -74,7 +77,7 @@ export const setInCache = async (date: string, data: any) => {
 export const getFromCache = async (date: string) => {
     await connect();
 
-    const text = await client.GET(`coordsCache:${date}`);
+    const text = await client.GET(`${cacheConfig.cacheKeyPrefix}:${date}`);
     if (text === null) {
         return null;
     }

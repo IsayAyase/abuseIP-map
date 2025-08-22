@@ -1,28 +1,20 @@
 "use client";
 
-import { useMapPropsStore } from "@/store/stateStore";
-
 const BottomNotes = () => {
-    const { zoom } = useMapPropsStore();
     return (
-        <div
-            data-hide={zoom >= 3}
-            className="fixed data-[hide=true]:opacity-0 bottom-0 left-0 my-1 mx-2 text-[10px] transition-opacity duration-300 ease-in-out"
-        >
+        <div className="fixed data-[hide=true]:opacity-0 bottom-0 left-0 my-1 mx-2 text-[10px] transition-opacity duration-300 ease-in-out">
             <p>
-                <span className="font-bold">Source:</span>
+                <span className="font-bold">Source: </span>
                 Abuse IPDB, IP API, MapTiler, OpenStreetMap
             </p>
-            <p>
-                <span className="font-bold">Note:</span> This map is for
-                educational purposes only. The data displayed is based on IP
-                geolocation and may not accurately represent the physical
-                location of the IP addresses.
+            <p className="text-[9px]">
+                <span className="font-bold">Note:</span> The data is updated
+                every 6 hours, with a 1-hour delay for a full update.
             </p>
-            <p>
-                <span className="font-bold">Disclaimer:</span> The information
-                provided here is not intended to be used for any illegal
-                activities or to infringe on privacy rights.
+            <p className="text-[9px]">
+                <span className="font-bold">Disclaimer:</span> Educational
+                purposes only. Data may not reflect physical location. Not
+                intended for illegal activities or privacy infringement.
             </p>
         </div>
     );

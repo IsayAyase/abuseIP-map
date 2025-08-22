@@ -2,8 +2,8 @@
 
 import type { AbuseIpWithInfoType, CoordOnlyInfoType } from "@/db/types";
 
-export async function getCoords(date: string): Promise<CoordOnlyInfoType[]> {
-    const res = await fetch(`/api/coords?date=${date}`, { method: "GET" });
+export async function getCoords(): Promise<CoordOnlyInfoType[]> {
+    const res = await fetch(`/api/coords`, { method: "GET" });
     const jsonData = await res.json();
     if (!jsonData.success)
         throw new Error("Something went wrong while calling coords api!");

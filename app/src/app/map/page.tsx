@@ -1,4 +1,3 @@
-import BottomNotes from "./_components/BottomNotes";
 import HeaderWithMetaInfo from "./_components/HeaderWithMetaInfo";
 import MapContainer from "./_components/MapContainer";
 import SideBar from "./_components/SideBar";
@@ -10,7 +9,6 @@ function Page() {
 
             <SideBar />
             <MapContainer />
-            <BottomNotes />
         </div>
     );
 }

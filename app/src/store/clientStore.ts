@@ -5,19 +5,14 @@ import {
 } from "./types";
 
 export const useGetCoordsStore = create<GetCoordsStoreType>((set, get) => ({
-    selectedDate: null,
-    coordsInfo: {},
+    coordsInfo: undefined,
     loading: false,
     error: null,
 
-    setSelectedDate: (date) => set({ selectedDate: date }),
-    setCoordsInfo: (date, coords) =>
-        set((state) => ({
-            coordsInfo: { ...state.coordsInfo, [date]: coords },
-        })),
-    isInfoFetched: (date) => {
+    setCoordsInfo: (coords) => set({ coordsInfo: coords }),
+    isInfoFetched: () => {
         const coordsInfo = get().coordsInfo;
-        return !!(coordsInfo[date] === null || Array.isArray(coordsInfo[date]));
+        return !!(coordsInfo === null || Array.isArray(coordsInfo));
     },
     setLoading: (loading) => set({ loading }),
     setError: (error) => set({ error }),

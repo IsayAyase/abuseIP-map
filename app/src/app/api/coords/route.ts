@@ -6,13 +6,12 @@ import { type NextRequest } from "next/server";
 
 export async function GET(request: NextRequest) {
     const id = request.nextUrl.searchParams.get("id");
-    const date = request.nextUrl.searchParams.get("date");
 
     let data;
-    if (date) {
-        data = await getCoordsOnlyAbuseIpWithInfo(date as string);
-    } else if (id) {
+    if (id) {
         data = await getAbuseIpWithInfoById(id as string);
+    } else {
+        data = await getCoordsOnlyAbuseIpWithInfo();
     }
 
     return Response.json(

@@ -1,15 +1,12 @@
 import type { AbuseIpWithInfoType, CoordOnlyInfoType } from "@/db/types";
 
 export type GetCoordsStoreType = {
-    selectedDate: string | null;
-    // id -> []
-    coordsInfo: Record<string, CoordOnlyInfoType[] | null>;
+    coordsInfo: CoordOnlyInfoType[] | null | undefined;
     loading: boolean;
     error: string | null;
 
-    setSelectedDate: (date: string | null) => void;
-    setCoordsInfo: (date: string, coords: CoordOnlyInfoType[] | null) => void;
-    isInfoFetched: (date: string) => boolean;
+    setCoordsInfo: (coords: CoordOnlyInfoType[] | null | undefined) => void;
+    isInfoFetched: () => boolean;
     setLoading: (loading: boolean) => void;
     setError: (error: string | null) => void;
 };
@@ -20,7 +17,7 @@ export type GetFullCoordInfoByIdStoreType = {
     loading: boolean;
     error: string | null;
 
-    isInfoFetched: (date: string) => boolean;
+    isInfoFetched: (id: string) => boolean;
     setClickedPointId: (id: string | null) => void;
     setInfos: (id: string, info: AbuseIpWithInfoType | null) => void;
     setLoading: (loading: boolean) => void;
@@ -46,9 +43,13 @@ export type MapPropStoreType = {
 };
 
 export type MapConfigsStoreType = {
+    globeEnabled: boolean;
+    spinEnabled: boolean;
     heatmapEnabled: boolean;
     coordinatesEnabled: boolean;
+
+    toggleGlobe: () => void;
+    toggleSpin: () => void;
     toggleHeatmap: () => void;
     toggleCoordinates: () => void;
-    setBothEnabled: () => void;
 };
