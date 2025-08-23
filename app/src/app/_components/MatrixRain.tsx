@@ -29,7 +29,7 @@ export default function MatrixRain({
     const {
         theme,
         systemTheme,
-        themes: [LIGHT, DARK, SYSTEM],
+        themes: [, DARK, SYSTEM],
     } = useTheme();
 
     useEffect(() => {
@@ -58,8 +58,8 @@ export default function MatrixRain({
             Math.ceil(
                 canvas.height / (window.devicePixelRatio || 1) / fontSize
             );
-        let columns = getCols();
-        let rows = getRows();
+        const columns = getCols();
+        const rows = getRows();
 
         const draw = () => {
             if (!running) return;
