@@ -22,3 +22,14 @@ export async function getFullCoordInfoById(
         );
     return jsonData.data;
 }
+
+export async function getLastUpdatedAt(): Promise<Date | null> {
+    const res = await fetch(`/api/lastUpdatedAt`, { method: "GET" });
+    const jsonData = await res.json();
+    if (!jsonData.success || !jsonData.data)
+        throw new Error(
+            jsonData.message ||
+                "Something went wrong while calling coords by ID api!"
+        );
+    return jsonData.data;
+}

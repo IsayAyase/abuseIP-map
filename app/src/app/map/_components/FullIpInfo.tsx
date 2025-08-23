@@ -70,7 +70,7 @@ const FullIpInfo = () => {
         },
         {
             label: "Last Reported At",
-            value: dayjs(info.lastReportedAt).format("YYYY-MM-DD HH:mm:ss A"),
+            value: dayjs(info.lastReportedAt).format("YYYY-MM-DD hh:mm:ss A"),
         },
         {
             label: "Abuse Confidence Score",
@@ -86,11 +86,17 @@ const FullIpInfo = () => {
         },
         {
             label: "Country",
-            value: `${info.ipInfo.country} (${info.ipInfo.countryCode})`,
+            value: `${info.ipInfo.country}${
+                info.ipInfo.countryCode
+                    ? " (" + info.ipInfo.countryCode + ")"
+                    : ""
+            }`,
         },
         {
             label: "Region",
-            value: `${info.ipInfo.regionName} (${info.ipInfo.region})`,
+            value: `${info.ipInfo.regionName}${
+                info.ipInfo.region ? " (" + info.ipInfo.region + ")" : ""
+            }`,
         },
         {
             label: "City",
@@ -123,7 +129,9 @@ const FullIpInfo = () => {
                         <p className="w-full border-r border-border p-1">
                             {item.label}
                         </p>
-                        <p className="w-full font-normal p-1">{item.value}</p>
+                        <p className="w-full font-normal p-1">
+                            {item.value || "-"}
+                        </p>
                     </div>
                 ))}
             </div>
