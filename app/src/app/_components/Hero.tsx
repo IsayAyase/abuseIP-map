@@ -8,7 +8,7 @@ const Hero = () => {
     return (
         <div className="pt-40">
             <SectionLayout className="flex-col">
-                <div className="flex flex-col items-center gap-4 mb-60">
+                <div className="flex flex-col items-center gap-4 md:mb-60">
                     <h1 className="text-8xl text-center">
                         Global Abusive IP Map
                     </h1>
