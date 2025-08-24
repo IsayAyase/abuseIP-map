@@ -1,5 +1,4 @@
 import PIPELINE_CONFIG from "../configs/pipelineConfig";
-import store from "../configs/store";
 import { insertAbuseIpWithInfo } from "../db-helpers/abuseIpWithInfo";
 import {
     bulkDeleteBlacklist,
@@ -19,18 +18,6 @@ import { fetchBulkIpInfo } from "../services/ipPAI";
 import type { IpInfoType } from "../types";
 
 const abuseIpWithInfoPipeline = async () => {
-    if (
-        store.values.status === "STARTED" ||
-        store.values.status === "PROCESSING"
-    ) {
-        throw new APIError({
-            message: "Data processing in progress",
-        });
-    }
-
-    store.setStoreValueFor("status", "STARTED");
-    store.setStoreValueFor("status", "PROCESSING");
-
     console.log("Starting...");
 
     const isBlacklistCacheEmpty = await isBlacklistEmpty();
@@ -113,6 +100,7 @@ const abuseIpWithInfoPipeline = async () => {
     );
 
     console.log("IpInfo fetched");
+    return;
     // ---------------------------------------------------------------------------
 };
 
