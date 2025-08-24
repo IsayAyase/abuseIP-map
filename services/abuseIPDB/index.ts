@@ -6,6 +6,9 @@ const app = Express();
 
 app.use(router);
 
-app.listen(envvars.PORT, () => {
-    console.log(`Server is running on port ${envvars.PORT}`);
-});
+if (envvars.NODE_ENV === "dev") {
+    app.listen(envvars.PORT, () => {
+        console.log(`Server is running on port ${envvars.PORT}`);
+    });
+}
+export default app;
