@@ -43,5 +43,7 @@ export const abuseIpWithInfoController = async (
         store.setStoreValueFor("status", "ERROR");
     } finally {
         await mongoose.disconnect();
+console.log(process.report);
+process.exit(0);
     }
 };
