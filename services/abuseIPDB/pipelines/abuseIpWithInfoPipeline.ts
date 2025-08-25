@@ -93,11 +93,7 @@ const abuseIpWithInfoPipeline = async () => {
         console.log("Data processed and saved \n");
         currentIteration++;
         await sleep(PIPELINE_CONFIG.SLEEP_BETWEEN_REQUESTS_IN_MS);
-    } while (
-        currentCount === LIMIT ||
-        currentCount > 0 ||
-        currentIteration <= MAX_ITERATIONS
-    );
+    } while (currentIteration <= MAX_ITERATIONS);
 
     console.log("IpInfo fetched");
     return;

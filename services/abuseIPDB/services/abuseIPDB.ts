@@ -22,7 +22,7 @@ export const getBlacklist = async (
             console.error("Error fetching blacklist:", response.status);
             return null;
         }
-        return response.json();
+        return await response.json();
     } catch (error) {
         console.error("Error fetching blacklist:", error);
         return null;

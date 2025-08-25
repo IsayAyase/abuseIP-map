@@ -25,7 +25,7 @@ export const abuseIpWithInfoController = async (
 
         store.setStoreValueFor("status", "COMPLETED");
 
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
             message: "Data processed and saved",
         });
@@ -33,17 +33,16 @@ export const abuseIpWithInfoController = async (
         store.setStoreValueFor("status", "ERROR");
         console.error("Error in abuseIpWithInfoController:", error);
         if (error instanceof APIError) {
-            res.status(400).json({ success: false, message: error.message });
+            return res
+                .status(400)
+                .json({ success: false, message: error.message });
         } else {
-            res.status(500).json({
+            return res.status(500).json({
                 success: false,
                 message: "Internal server error",
             });
         }
-        store.setStoreValueFor("status", "ERROR");
     } finally {
         await mongoose.disconnect();
-console.log(process.report);
-process.exit(0);
     }
 };
