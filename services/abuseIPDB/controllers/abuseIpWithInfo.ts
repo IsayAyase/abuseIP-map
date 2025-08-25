@@ -44,5 +44,6 @@ export const abuseIpWithInfoController = async (
         }
     } finally {
         await mongoose.disconnect();
+        process.exit();
     }
 };
