@@ -1,4 +1,5 @@
 import type { Request, Response } from "express";
+import mongoose from "mongoose";
 import store from "../configs/store";
 import { APIError } from "../lib/error";
 import abuseIpWithInfoPipeline from "../pipelines/abuseIpWithInfoPipeline";
@@ -40,5 +41,7 @@ export const abuseIpWithInfoController = async (
             });
         }
         store.setStoreValueFor("status", "ERROR");
+    } finally {
+        await mongoose.disconnect();
     }
 };
