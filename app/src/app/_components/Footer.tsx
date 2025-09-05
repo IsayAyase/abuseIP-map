@@ -50,16 +50,16 @@ const Footer = () => {
                 <span>
                     {"Build by"}{" "}
                     <a
-                        href="https://x.com/prabhatsuntoh"
+                        href="https://x.com/IsayAyase"
                         target="_blank"
                         rel="noreferrer"
                         className="underline"
                     >
-                        prabhatsuntoh
+                        IsayAyase
                     </a>
                     {" • Check out the public github "}
                     <a
-                        href="https://github.com/prabhatm8000/"
+                        href="https://github.com/IsayAyase/"
                         target="_blank"
                         rel="noreferrer"
                         className="underline"
