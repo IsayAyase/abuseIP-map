@@ -21,11 +21,11 @@ export const metadata: Metadata = {
         title: "mapware | Abusive IP Tracker",
         description:
             "Tracks abusive IP addresses with their locations and shows the data on a 3D map.",
-        url: "https://mapware.vercel.app/",
+        url: "https://mapware.prabhatlabs.dev/",
         siteName: "mapware",
         images: [
             {
-                url: "https://mapware.vercel.app/preview.png",
+                url: "https://mapware.prabhatlabs.dev/preview.png",
                 width: 1200,
                 height: 630,
                 alt: "mapware - Preview",
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
         title: "mapware | Abusive IP Tracker",
         description:
             "Tracks abusive IP addresses with their locations and shows the data on a 3D map.",
-        images: ["https://mapware.vercel.app/preview.png"],
+        images: ["https://mapware.prabhatlabs.dev/preview.png"],
         creator: "@prabhatsuntoh",
     },
 };
